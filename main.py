@@ -2,9 +2,12 @@
 
 import argparse
 import os
+import pdb
+import IPython
 
 import sqlalchemy
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.declarative import declarative_base
 
 def dump_data(output_session, output_engine, input_session, input_engine):
     input_table_list = input_engine.table_names()
@@ -14,11 +17,15 @@ def dump_data(output_session, output_engine, input_session, input_engine):
         output_table = sqlalchemy.Table(input_table_name, output_engine._metadata)
         for column in input_table.columns:
             output_table.append_column(column.copy())
-        output_table.create()
+        Base = declarative_base()
+        tables = Base.metadata.tables;
+        IPython.embed()
         data = input_engine.execute(tables[input_table_name].select()).fetchall()
+        print('data=\n%s' % data)
         if data:
             output_engine(tables[input_table_name].insert(), data)
-
+        output_table.create()
+                
         
 def main():
     parser = argparse.ArgumentParser('merge an arbitrary number of sqlite files')
@@ -37,6 +44,7 @@ def main():
     output_engine._metadata = sqlalchemy.MetaData(bind=output_engine)
     
     for input_sqlite in input_sqlite_list:
+        print('input_sqlite=%s' % input_sqlite)
         input_engine_path = 'sqlite:///' + input_sqlite
         input_engine = sqlalchemy.create_engine(input_engine_path, isolation_level='SERIALIZABLE')
         input_Session = sessionmaker(bind=input_engine)
