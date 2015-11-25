@@ -20,12 +20,13 @@ def dump_data(output_session, output_engine, input_session, input_engine):
 def main():
     parser = argparse.ArgumentParser('merge an arbitrary number of sqlite files')
     parser.add_argument('-i', '--input_sqlite', action='append', required=True)
-    parser.add_argument('-o', '--output_sqlite', required=True)
+    parser.add_argument('-u', '--uuid', required=True)
     args = parser.parse_args()
     
     input_sqlite_list = args.input_sqlite
-    output_sqlite = args.output_sqlite
-
+    uuid = args.uuid
+    
+    output_sqlite = uuid+'.db'
     output_engine_path = 'sqlite:///' + output_sqlite
     output_engine = sqlalchemy.create_engine(output_engine_path, isolation_level='SERIALIZABLE')
     output_Session = sessionmaker(bind=output_engine)
