@@ -36,6 +36,6 @@ RUN pip install --user virtualenvwrapper \
     && echo source ${HOME}/.local/bin/virtualenvwrapper.sh >> ${HOME}/.bashrc \
     && echo source ${HOME}/.virtualenvs/p3/bin/activate >> ${HOME}/.bashrc"
 
-ENV merge_sqlite 0.001
+ENV merge_sqlite 0.002
 
 RUN git clone https://github.com/jeremiahsavage/merge_sqlite.git
