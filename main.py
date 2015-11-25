@@ -15,6 +15,9 @@ def dump_data(output_session, output_engine, input_session, input_engine):
         for column in input_table.columns:
             output_table.append_column(column.copy())
         output_table.create()
+        data = input_engine.execute(tables[input_table_name].select()).fetchall()
+        if data:
+            output_engine(tables[input_table_name].insert(), data)
 
         
 def main():
