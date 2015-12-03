@@ -39,18 +39,13 @@ def main():
         source_cur = source_conn.cursor()
         source_cur.execute('SELECT * from sqlite_master')
         source_master = source_cur.fetchall()
-        print('source_master=%s' % source_master)
         source_tables = list(filter(lambda r: r[0] == 'table', source_master))
-        print('source_tables=%s' % list(source_tables))
-        print('len(source_tables)=%s' % len(source_tables))
         for source_table in source_tables:
             destination_cur.execute(source_table[4]) #4 is sql
             cursor = source_cur.execute('select * from %s' % source_table[1]) # 1 is name
             names = tuple(map(lambda x: x[0], cursor.description))
             for source_row in source_cur:
                 phold = ','.join(('?',) * len(source_row))
-                source_tuple = eval('(' + str(source_row).strip('(').strip('(').strip(')').strip(')') + ')')
-                source_str = str(source_row).strip('(').strip('(').strip(')').strip(')')
                 query = 'INSERT INTO %(tbl)s %(col)s VALUES (%(phold)s)' % {
                     'tbl' : source_table[1], # 1 is name
                     'col' : names,
