@@ -1,39 +1,21 @@
 #!/usr/bin/env python3
 
 import argparse
-#import os
 import sqlite3
-import IPython
-
-
-def get_row_str(source_tuple):
-    source_list = list(source_tuple)
-    new_str = str()
-    for i, source_field in enumerate(source_list):
-        source_field_str = str(source_field).strip()
-        if source_field == None:
-            new_str += '\'\','
-        elif type(source_field) is str:
-            new_str += '"'+str(source_field)+'"'+','
-        else:
-            new_str += str(source_field)+','
-    new_str = new_str.rstrip(',')
-    return new_str
-
 
 def main():
     parser = argparse.ArgumentParser('merge an arbitrary number of sqlite files')
     parser.add_argument('-s', '--source_sqlite', action='append', required=True)
     parser.add_argument('-u', '--uuid', required=True)
     args = parser.parse_args()
-    
+
     source_sqlite_list = args.source_sqlite
     uuid = args.uuid
-    
+
     destination_sqlite_path = uuid+'.db'
     destination_conn = sqlite3.connect(destination_sqlite_path)
     destination_cur = destination_conn.cursor()
-    
+
     for source_sqlite_path in source_sqlite_list:
         source_conn = sqlite3.connect(source_sqlite_path)
         source_cur = source_conn.cursor()
