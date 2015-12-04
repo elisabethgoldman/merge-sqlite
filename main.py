@@ -2,9 +2,6 @@
 
 import argparse
 
-import pipe_util
-
-
 def do_shell_command(cmd, stdout=subprocess.STDOUT, stderr=subprocess.PIPE):
     try:
         output = subprocess.check_output(cmd, env=env, stderr=subprocess.STDOUT, shell=True)
