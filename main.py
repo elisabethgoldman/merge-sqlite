@@ -1,7 +1,17 @@
 #!/usr/bin/env python3
 
 import argparse
-import sqlite3
+
+import pipe_util
+
+
+def do_shell_command(cmd, stdout=subprocess.STDOUT, stderr=subprocess.PIPE):
+    try:
+        output = subprocess.check_output(cmd, env=env, stderr=subprocess.STDOUT, shell=True)
+    except Exception as e:
+        sys.exit('failed cmd: %s' % str(cmd))
+    return output
+
 
 def main():
     parser = argparse.ArgumentParser('merge an arbitrary number of sqlite files')
@@ -17,8 +27,14 @@ def main():
     for source_sqlite_path in source_sqlite_list:
         source_sqlite_name = os.path.splitext(source_dump_path)
         source_dump_path = source_sqlite_name + '.sql'
+        #dump
         cmd = ['sqlite3', source_sqlite_path, '.dump', '>', source_dump_path ]
+        shell_cmd = ' '.join(cmd)
+        do_shell_command(shell_cmd)
+        #load
         cmd = ['sqlite3', destination_sqlite_path, '<', source_dump_path]
+        shell_cmd = ' '.join(cmd)
+        do_shell_command(shell_cmd)
                                         
 if __name__ == '__main__':
     main()
