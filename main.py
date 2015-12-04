@@ -13,28 +13,12 @@ def main():
     uuid = args.uuid
 
     destination_sqlite_path = uuid+'.db'
-    destination_conn = sqlite3.connect(destination_sqlite_path)
-    destination_cur = destination_conn.cursor()
-
+    
     for source_sqlite_path in source_sqlite_list:
-        source_conn = sqlite3.connect(source_sqlite_path)
-        source_cur = source_conn.cursor()
-        source_cur.execute('SELECT * from sqlite_master')
-        source_master = source_cur.fetchall()
-        source_tables = list(filter(lambda r: r[0] == 'table', source_master))
-        for source_table in source_tables:
-            destination_cur.execute(source_table[4]) #4 is sql
-            cursor = source_cur.execute('select * from %s' % source_table[1]) # 1 is name
-            names = tuple(map(lambda x: x[0], cursor.description))
-            for source_row in source_cur:
-                phold = ','.join(('?',) * len(source_row))
-                query = 'INSERT INTO %(tbl)s %(col)s VALUES (%(phold)s)' % {
-                    'tbl' : source_table[1], # 1 is name
-                    'col' : names,
-                    'phold' : phold
-                    }
-                destination_cur.execute(query, source_row)
-                destination_conn.commit()
+        source_sqlite_name = os.path.splitext(source_dump_path)
+        source_dump_path = source_sqlite_name + '.sql'
+        cmd = ['sqlite3', source_sqlite_path, '.dump', '>', source_dump_path ]
+        cmd = ['sqlite3', destination_sqlite_path, '<', source_dump_path]
                                         
 if __name__ == '__main__':
     main()
