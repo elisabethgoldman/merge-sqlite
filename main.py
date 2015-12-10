@@ -3,6 +3,7 @@
 import argparse
 import os
 import subprocess
+import sys
 
 def do_shell_command(cmd, stdout=subprocess.STDOUT, stderr=subprocess.PIPE):
     try:
