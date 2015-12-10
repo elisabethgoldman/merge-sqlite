@@ -28,7 +28,7 @@ def main():
         source_sqlite_name = os.path.splitext(os.path.basename(source_sqlite_path))[0]
         source_dump_path = source_sqlite_name + '.sql'
         #dump
-        cmd = ['sqlite3', source_sqlite_path, '.dump', '>', source_dump_path ]
+        cmd = ['sqlite3', source_sqlite_path, "\'.dump\'", '>', source_dump_path ]
         shell_cmd = ' '.join(cmd)
         do_shell_command(shell_cmd)
         #load
