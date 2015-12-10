@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
+import os
 import subprocess
 
 def do_shell_command(cmd, stdout=subprocess.STDOUT, stderr=subprocess.PIPE):
