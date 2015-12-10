@@ -15,6 +15,7 @@ RUN apt-get update && apt-get install -y --force-yes \
     python-virtualenv \
     python3-dev \
     software-properties-common \
+    sqlite3 \
     time \
     zlib1g-dev
 
