@@ -23,8 +23,9 @@ def main():
     uuid = args.uuid
 
     destination_sqlite_path = uuid+'.db'
-    
+    print('destination_sqlite_path=%s' % destination_sqlite_path)
     for source_sqlite_path in source_sqlite_list:
+        ('source_sqlite_path=%s' % source_sqlite_path)
         source_sqlite_name = os.path.splitext(os.path.basename(source_sqlite_path))[0]
         source_dump_path = source_sqlite_name + '.sql'
         #dump
