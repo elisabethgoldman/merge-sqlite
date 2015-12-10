@@ -7,7 +7,7 @@ import sys
 
 def do_shell_command(cmd, stdout=subprocess.STDOUT, stderr=subprocess.PIPE):
     try:
-        output = subprocess.check_output(cmd, env=env, stderr=subprocess.STDOUT, shell=True)
+        output = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True)
     except Exception as e:
         print('Exception output: %s' % output)
         sys.exit('failed cmd: %s' % str(cmd))
