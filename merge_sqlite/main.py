@@ -54,7 +54,7 @@ def main():
             shell_cmd = ' '.join(cmd)
             pipe_util.do_shell_command(shell_cmd, logger)
 
-            elapsed_time = time.time() = start_time
+            elapsed_time = time.time() - start_time
 
             #store time
             df = time_util.store_seconds(uuid, elapsed_time, logger)
