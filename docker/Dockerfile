@@ -4,8 +4,6 @@ FROM quay.io/jeremiahsavage/cdis_base
 USER root
 
 ENV DEBIAN_FRONTEND=noninteractive
-RUN apt-get update \
-    && apt-get dist-upgrade -y --force-yes
 
 RUN apt-get update && apt-get install -y --force-yes \
     sqlite3
