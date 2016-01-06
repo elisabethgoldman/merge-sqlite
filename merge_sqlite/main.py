@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
-
+import logging
 import os
 
 from cdis_pipe_utils import df_util
