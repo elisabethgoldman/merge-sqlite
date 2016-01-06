@@ -3,6 +3,7 @@
 import argparse
 import logging
 import os
+import time
 
 from cdis_pipe_utils import df_util
 from cdis_pipe_utils import pipe_util
@@ -36,9 +37,11 @@ def main():
     else:
         logger.info('running step `merge_sqlite`')
         for source_sqlite_path in source_sqlite_list:
-            ('source_sqlite_path=%s' % source_sqlite_path)
+            logger.info('source_sqlite_path=%s' % source_sqlite_path)
             source_sqlite_name = os.path.splitext(os.path.basename(source_sqlite_path))[0]
 
+            start_time = time.time()
+            
             #dump
             source_dump_path = source_sqlite_name + '.sql'
             cmd = ['sqlite3', source_sqlite_path, "\'.dump\'", '>', source_dump_path ]
@@ -50,6 +53,18 @@ def main():
             cmd = ['sqlite3', destination_sqlite_path, '<', source_dump_path]
             shell_cmd = ' '.join(cmd)
             pipe_util.do_shell_command(shell_cmd, logger)
+
+            elapsed_time = time.time() = start_time
+
+            #store time
+            df = time_util.store_seconds(uuid, elapsed_time, logger)
+            table_name = 'time_merge_sqlite'
+            unique_key_dict = {'uuid': uuid, 'source_sqlite_name': source_sqlite_name, 'destination_sqlite_name': destination_sqlite_path}
+            df['uuid'] = uuid
+            df['source_sqlite_name'] = source_sqlite_name
+            df['destination_sqlite_name'] = destination_sqlite_path
+            df_util.save_df_to_sqlalchemy(df, unique_key_dict, table_name, engine, logger)
+            
         pipe_util.create_already_step(step_dir, uuid + '_db', logger)
     return
 
