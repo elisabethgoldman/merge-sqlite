@@ -10,6 +10,15 @@ from cdis_pipe_utils import time_util
 
 def main():
     parser = argparse.ArgumentParser('merge an arbitrary number of sqlite files')
+    # Logging flags.
+    parser.add_argument('-d', '--debug',
+        action = 'store_const',
+        const = logging.DEBUG,
+        dest = 'level',
+        help = 'Enable debug logging.',
+    )
+    parser.set_defaults(level = logging.INFO)
+
     parser.add_argument('-s', '--source_sqlite', action='append', required=True)
     parser.add_argument('-u', '--uuid', required=True)
     args = parser.parse_args()
