@@ -11,9 +11,9 @@ from cdis_pipe_utils import time_util
 
 def allow_create_fail(sql_path, logger):
     shell_cmd = "sed -i 's/CREATE TABLE/CREATE TABLE if not exists/g' " + sql_path
-    do_shell_command(shell_cmd, logger)
+    pipe_util.do_shell_command(shell_cmd, logger)
     shell_cmd = "sed -i 's/CREATE INDEX/CREATE INDEX if not exists/g' " + sql_path
-    do_shell_command(shell_cmd, logger)
+    pipe_util.do_shell_command(shell_cmd, logger)
     return
 
 def main():
