@@ -9,6 +9,12 @@ from cdis_pipe_utils import df_util
 from cdis_pipe_utils import pipe_util
 from cdis_pipe_utils import time_util
 
+def allow_create_fail(sql_path, logger):
+    shell_cmd = "sed -i 's/CREATE TABLE/CREATE TABLE if not exists/g' " + sql_path
+    do_shell_command(shell_cmd, logger)
+    shell_cmd = "sed -i 's/CREATE INDEX/CREATE INDEX if not exists/g' " + sql_path
+    do_shell_command(shell_cmd, logger)
+
 def main():
     parser = argparse.ArgumentParser('merge an arbitrary number of sqlite files')
     # Logging flags.
@@ -48,6 +54,10 @@ def main():
             shell_cmd = ' '.join(cmd)
             pipe_util.do_shell_command(shell_cmd, logger)
 
+
+            #alter text create table/index
+            allow_create_fail(source_dump_path, logger)
+            
             #load
             destination_sqlite_path = uuid + '.db'
             cmd = ['sqlite3', destination_sqlite_path, '<', source_dump_path]
