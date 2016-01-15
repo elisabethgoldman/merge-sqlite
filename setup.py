@@ -5,7 +5,7 @@ from setuptools import setup, find_packages
 setup(name = 'merge_sqlite',
       author = 'Jeremiah H. Savage',
       author_email = 'jeremiahsavage@gmail.com',
-      version = 0.9,
+      version = 0.12,
       description = 'merge arbitrary number of sqlite files',
       url = 'https://github.com/jeremiahsavage/merge_sqlite',
       license = 'Apache 2.0',
