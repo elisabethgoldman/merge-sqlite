@@ -14,6 +14,7 @@ def allow_create_fail(sql_path, logger):
     do_shell_command(shell_cmd, logger)
     shell_cmd = "sed -i 's/CREATE INDEX/CREATE INDEX if not exists/g' " + sql_path
     do_shell_command(shell_cmd, logger)
+    return
 
 def main():
     parser = argparse.ArgumentParser('merge an arbitrary number of sqlite files')
