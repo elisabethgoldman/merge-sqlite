@@ -36,7 +36,11 @@ def main():
 
     tool_name = 'merge_sqlite'
     logger = pipe_util.setup_logging(tool_name, args, uuid)
-    engine = pipe_util.setup_db(uuid+'_log')
+
+    sqlite_name = uuid + '.db'
+    engine_path = 'sqlite:///' + sqlite_name
+    engine = sqlalchemy.create_engine(engine_path, isolation_level='SERIALIZABLE')
+
 
     step_dir = os.getcwd()
     if pipe_util.already_step(step_dir, uuid + '_db', logger):
