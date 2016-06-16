@@ -5,6 +5,8 @@ import logging
 import os
 import time
 
+import sqlalchemy
+
 from cdis_pipe_utils import df_util
 from cdis_pipe_utils import pipe_util
 from cdis_pipe_utils import time_util
