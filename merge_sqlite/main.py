@@ -31,7 +31,7 @@ def main():
 
     parser.add_argument('-s', '--source_sqlite',
                         action='append',
-                        required=True
+                        required=False
     )
     parser.add_argument('-u', '--uuid',
                         required=True
@@ -58,6 +58,7 @@ def main():
             db_name = uuid + '.db'
             cmd = ['touch', db_name]
             pipe_util.do_command(cmd, logger)
+        #else:
         for source_sqlite_path in source_sqlite_list:
             logger.info('source_sqlite_path=%s' % source_sqlite_path)
             source_sqlite_name = os.path.splitext(os.path.basename(source_sqlite_path))[0]
