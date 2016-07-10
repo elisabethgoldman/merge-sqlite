@@ -57,7 +57,7 @@ def main():
         try:
             source_sqlite_list
         except NameError:
-            logger.info('empty set, create 0 byte file'
+            logger.info('empty set, create 0 byte file')
             db_name = uuid + '.db'
             cmd = ['touch', db_name]
             pipe_util.do_command(cmd, logger)
