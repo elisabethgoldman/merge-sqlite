@@ -29,8 +29,13 @@ def main():
     )
     parser.set_defaults(level = logging.INFO)
 
-    parser.add_argument('-s', '--source_sqlite', action='append', required=True)
-    parser.add_argument('-u', '--uuid', required=True)
+    parser.add_argument('-s', '--source_sqlite',
+                        action='append',
+                        required=True
+    )
+    parser.add_argument('-u', '--uuid',
+                        required=True
+    )
     args = parser.parse_args()
 
     source_sqlite_list = args.source_sqlite
@@ -39,7 +44,7 @@ def main():
     tool_name = 'merge_sqlite'
     logger = pipe_util.setup_logging(tool_name, args, uuid)
 
-    sqlite_name = uuid + '.db'
+    sqlite_name = uuid + '_merge_time.db'
     engine_path = 'sqlite:///' + sqlite_name
     engine = sqlalchemy.create_engine(engine_path, isolation_level='SERIALIZABLE')
 
@@ -49,6 +54,10 @@ def main():
         logger.info('already completed step `merge_sqlite`')
     else:
         logger.info('running step `merge_sqlite`')
+        if len(source_sqlite_list) == 0:
+            db_name = uuid + '.db'
+            cmd = ['touch', db_name]
+            pipe_util.do_command(cmd, logger)
         for source_sqlite_path in source_sqlite_list:
             logger.info('source_sqlite_path=%s' % source_sqlite_path)
             source_sqlite_name = os.path.splitext(os.path.basename(source_sqlite_path))[0]
