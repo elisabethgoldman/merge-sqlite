@@ -56,7 +56,7 @@ def main():
         logger.info('running step `merge_sqlite`')
         try:
             source_sqlite_list
-        except NameError:
+        except:
             logger.info('empty set, create 0 byte file')
             db_name = uuid + '.db'
             cmd = ['touch', db_name]
