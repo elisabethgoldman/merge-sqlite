@@ -54,43 +54,46 @@ def main():
         logger.info('already completed step `merge_sqlite`')
     else:
         logger.info('running step `merge_sqlite`')
-        if len(source_sqlite_list) == 0:
+        try:
+            source_sqlite_list
+        except NameError:
+            logger.info('empty set, create 0 byte file'
             db_name = uuid + '.db'
             cmd = ['touch', db_name]
             pipe_util.do_command(cmd, logger)
-        #else:
-        for source_sqlite_path in source_sqlite_list:
-            logger.info('source_sqlite_path=%s' % source_sqlite_path)
-            source_sqlite_name = os.path.splitext(os.path.basename(source_sqlite_path))[0]
+        else:
+            for source_sqlite_path in source_sqlite_list:
+                logger.info('source_sqlite_path=%s' % source_sqlite_path)
+                source_sqlite_name = os.path.splitext(os.path.basename(source_sqlite_path))[0]
 
-            start_time = time.time()
-            
-            #dump
-            source_dump_path = source_sqlite_name + '.sql'
-            cmd = ['sqlite3', source_sqlite_path, "\'.dump\'", '>', source_dump_path ]
-            shell_cmd = ' '.join(cmd)
-            pipe_util.do_shell_command(shell_cmd, logger)
+                start_time = time.time()
+
+                #dump
+                source_dump_path = source_sqlite_name + '.sql'
+                cmd = ['sqlite3', source_sqlite_path, "\'.dump\'", '>', source_dump_path ]
+                shell_cmd = ' '.join(cmd)
+                pipe_util.do_shell_command(shell_cmd, logger)
 
 
-            #alter text create table/index
-            allow_create_fail(source_dump_path, logger)
-            
-            #load
-            destination_sqlite_path = uuid + '.db'
-            cmd = ['sqlite3', destination_sqlite_path, '<', source_dump_path]
-            shell_cmd = ' '.join(cmd)
-            pipe_util.do_shell_command(shell_cmd, logger)
+                #alter text create table/index
+                allow_create_fail(source_dump_path, logger)
 
-            elapsed_time = time.time() - start_time
+                #load
+                destination_sqlite_path = uuid + '.db'
+                cmd = ['sqlite3', destination_sqlite_path, '<', source_dump_path]
+                shell_cmd = ' '.join(cmd)
+                pipe_util.do_shell_command(shell_cmd, logger)
 
-            #store time
-            df = time_util.store_seconds(uuid, elapsed_time, logger)
-            table_name = 'time_merge_sqlite'
-            unique_key_dict = {'uuid': uuid, 'source_sqlite_name': source_sqlite_name, 'destination_sqlite_name': destination_sqlite_path}
-            df['uuid'] = uuid
-            df['source_sqlite_name'] = source_sqlite_name
-            df['destination_sqlite_name'] = destination_sqlite_path
-            df_util.save_df_to_sqlalchemy(df, unique_key_dict, table_name, engine, logger)
+                elapsed_time = time.time() - start_time
+
+                #store time
+                df = time_util.store_seconds(uuid, elapsed_time, logger)
+                table_name = 'time_merge_sqlite'
+                unique_key_dict = {'uuid': uuid, 'source_sqlite_name': source_sqlite_name, 'destination_sqlite_name': destination_sqlite_path}
+                df['uuid'] = uuid
+                df['source_sqlite_name'] = source_sqlite_name
+                df['destination_sqlite_name'] = destination_sqlite_path
+                df_util.save_df_to_sqlalchemy(df, unique_key_dict, table_name, engine, logger)
             
         pipe_util.create_already_step(step_dir, uuid + '_db', logger)
     return
