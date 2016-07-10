@@ -1,6 +1,6 @@
 FROM quay.io/jeremiahsavage/cdis_base
 
-ENV merge_sqlite 0.18
+ENV merge_sqlite 0.19
 
 USER root
 
