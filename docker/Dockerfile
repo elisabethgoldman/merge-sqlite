@@ -1,16 +1,16 @@
-FROM quay.io/jeremiahsavage/cdis_base
+FROM ubuntu:xenial-20160713
 
-ENV merge_sqlite 0.22
+MAINTAINER Jeremiah H. Savage <jeremiahsavage@gmail.com>
+
+ENV merge_sqlite 0.23
 
 USER root
 
-ENV DEBIAN_FRONTEND=noninteractive
-
-RUN apt-get update && apt-get install -y --force-yes \
+RUN apt-get update && apt-get install -y \
+    python3-pip \
     sqlite3
 
 RUN apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-RUN /bin/bash -c "source ${HOME}/.virtualenvs/p3/bin/activate \
-    && pip install merge_sqlite"
+RUN pip install merge_sqlite
