@@ -12,9 +12,9 @@ def allow_create_fail(sql_path, logger):
     check_output(shell_cmd, shell=True)
     return
 
-def setup_logging(args, uuid):
+def setup_logging(args, run_uuid):
     basicConfig(
-        filename=os.path.join(uuid + '.log'),
+        filename=os.path.join(run_uuid + '.log'),
         level=args.level,
         filemode='w',
         format='%(asctime)s %(levelname)s %(message)s',
@@ -39,19 +39,19 @@ def main():
                         action='append',
                         required=False
     )
-    parser.add_argument('-u', '--uuid',
+    parser.add_argument('-u', '--run_uuid',
                         required=True
     )
     args = parser.parse_args()
 
     source_sqlite_list = args.source_sqlite
-    uuid = args.uuid
+    run_uuid = args.run_uuid
 
-    logger = setup_logging(args, uuid)
+    logger = setup_logging(args, run_uuid)
 
     if source_sqlite_list is None:
         logger.info('empty set, create 0 byte file')
-        db_name = uuid + '.db'
+        db_name = run_uuid + '.db'
         cmd = ['touch', db_name]
         output = check_output(cmd, shell=False)
     else:
@@ -69,7 +69,7 @@ def main():
             allow_create_fail(source_dump_path, logger)
 
             #load
-            destination_sqlite_path = uuid + '.db'
+            destination_sqlite_path = run_uuid + '.db'
             cmd = ['sqlite3', destination_sqlite_path, '<', source_dump_path]
             shell_cmd = ' '.join(cmd)
             output = check_output(shell_cmd, shell=True)
