@@ -12,6 +12,44 @@ def allow_create_fail(sql_path, logger):
     check_output(shell_cmd, shell=True)
     return
 
+def get_table_column_list(sql_path, logger):
+    table_column_list = list()
+    with open(sql_path, 'r') as f_open:
+        in_table = False
+        for line in f_open:
+            if line.startswith('CREATE TABLE'):
+                in_table = True
+            if line.startswith(');'):
+                return table_column_list
+            if in_table:
+                line = line.strip().strip('\n')
+                line_split = line.split()
+                table_column_list.append(line_split[0])
+    sys.exit('failed on file: %s' % sql_path)
+    return
+
+def alter_insert(table_column_list, sql_path, logger):
+    specific_insert_file = 'specific_insert.sql'
+    alter_sql_open = open(specific_insert_file, 'w')
+    with open(sql_path, 'r') as f_open:
+        for line in f_open:
+            if line.startswith('INSERT INTO'):
+                specific_columns = '(' + ','.join(table_column_list) + ')'
+                logger.info('specific_columns=%s' % specific_columns)
+                line_split = line.split()
+                line_split.insert(2, specific_columns)
+                new_line = ' '.join(line_split)
+                alter_sql_open.write(new_line)
+            else:
+                alter_sql_open.write(line)
+    alter_sql_open.close()
+    return specific_insert_file
+
+def specific_column_insert(sql_path, logger):
+    table_column_list = get_table_column_list(sql_path, logger)
+    specific_insert_file = alter_insert(table_column_list, sql_path, logger)
+    return specific_insert_file
+
 def setup_logging(args, run_uuid):
     basicConfig(
         filename=os.path.join(run_uuid + '.log'),
@@ -68,9 +106,12 @@ def main():
             #alter text create table/index
             allow_create_fail(source_dump_path, logger)
 
+            #specific column insert
+            specific_insert_file = specific_column_insert(source_dump_path, logger)
+
             #load
             destination_sqlite_path = run_uuid + '.db'
-            cmd = ['sqlite3', destination_sqlite_path, '<', source_dump_path]
+            cmd = ['sqlite3', destination_sqlite_path, '<', specific_insert_file]
             shell_cmd = ' '.join(cmd)
             output = check_output(shell_cmd, shell=True)
 
