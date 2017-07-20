@@ -23,9 +23,10 @@ def get_table_column_list(sql_path, logger):
             if line.startswith(');'):
                 return table_column_list
             if in_table:
-                line = line.strip().strip('\n')
+                line = line.strip().strip('\n').lstrip().rstrip(',')
                 line_split = line.split()
-                table_column_list.append(line_split[0])
+                column_name = ' '.join(line_split[:-1])
+                table_column_list.append(column_name)
     sys.exit('failed on file: %s' % sql_path)
     return
 
@@ -39,7 +40,7 @@ def alter_insert(table_column_list, sql_path, logger):
                 specific_columns = '(' + ','.join(table_column_list) + ')'
                 logger.info('specific_columns=%s' % specific_columns)
                 line_split = line.split()
-                line_split.insert(2, specific_columns)
+                line_split.insert(3, specific_columns)
                 new_line = ' '.join(line_split) + '\n'
                 alter_sql_open.write(new_line)
             else:
