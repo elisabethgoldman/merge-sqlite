@@ -28,7 +28,7 @@ def get_table_column_list(f_open, alter_sql_open, logger):
     sys.exit('failed on file: %s' % f_open)
     return
 
-def alter_insert(table_column_list, sql_path, logger):
+def alter_insert(sql_path, logger):
     specific_insert_file = 'specific_insert.sql'
     alter_sql_open = open(specific_insert_file, 'w')
     with open(sql_path, 'r') as f_open:
