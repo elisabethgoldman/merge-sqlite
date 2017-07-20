@@ -34,6 +34,7 @@ def alter_insert(sql_path, logger):
     with open(sql_path, 'r') as f_open:
         for line in f_open:
             if line.startswith('CREATE TABLE'):
+                alter_sql_open.write(line)
                 table_column_list = get_table_column_list(f_open, alter_sql_open, logger)
             elif line.startswith('INSERT INTO'):
                 line = line.strip('\n')
