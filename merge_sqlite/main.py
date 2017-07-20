@@ -49,7 +49,7 @@ def alter_insert(table_column_list, sql_path, logger):
     return specific_insert_file
 
 def specific_column_insert(sql_path, logger):
-    specific_insert_file = alter_insert(table_column_list, sql_path, logger)
+    specific_insert_file = alter_insert(sql_path, logger)
     return specific_insert_file
 
 def setup_logging(args, run_uuid):
