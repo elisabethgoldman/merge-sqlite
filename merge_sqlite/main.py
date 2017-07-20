@@ -19,6 +19,7 @@ def get_table_column_list(sql_path, logger):
         for line in f_open:
             if line.startswith('CREATE TABLE'):
                 in_table = True
+                continue
             if line.startswith(');'):
                 return table_column_list
             if in_table:
@@ -34,11 +35,12 @@ def alter_insert(table_column_list, sql_path, logger):
     with open(sql_path, 'r') as f_open:
         for line in f_open:
             if line.startswith('INSERT INTO'):
+                line = line.strip('\n')
                 specific_columns = '(' + ','.join(table_column_list) + ')'
                 logger.info('specific_columns=%s' % specific_columns)
                 line_split = line.split()
                 line_split.insert(2, specific_columns)
-                new_line = ' '.join(line_split)
+                new_line = ' '.join(line_split) + '\n'
                 alter_sql_open.write(new_line)
             else:
                 alter_sql_open.write(line)
