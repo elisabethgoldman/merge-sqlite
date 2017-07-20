@@ -12,22 +12,20 @@ def allow_create_fail(sql_path, logger):
     check_output(shell_cmd, shell=True)
     return
 
-def get_table_column_list(sql_path, logger):
+def get_table_column_list(f_open, alter_sql_open, logger):
     table_column_list = list()
-    with open(sql_path, 'r') as f_open:
-        in_table = False
-        for line in f_open:
-            if line.startswith('CREATE TABLE'):
-                in_table = True
-                continue
-            if line.startswith(');'):
-                return table_column_list
-            if in_table:
-                line = line.strip().strip('\n').lstrip().rstrip(',')
-                line_split = line.split()
-                column_name = ' '.join(line_split[:-1])
-                table_column_list.append(column_name)
-    sys.exit('failed on file: %s' % sql_path)
+    for line in f_open:
+        logger.info('line=%s' % line)
+        if line.startswith(');'):
+            alter_sql_open.write(line)
+            return table_column_list
+        else:
+            alter_sql_open.write(line)
+            line = line.strip().strip('\n').lstrip().rstrip(',')
+            line_split = line.split()
+            column_name = ' '.join(line_split[:-1])
+            table_column_list.append(column_name)
+    sys.exit('failed on file: %s' % f_open)
     return
 
 def alter_insert(table_column_list, sql_path, logger):
@@ -35,7 +33,9 @@ def alter_insert(table_column_list, sql_path, logger):
     alter_sql_open = open(specific_insert_file, 'w')
     with open(sql_path, 'r') as f_open:
         for line in f_open:
-            if line.startswith('INSERT INTO'):
+            if line.startswith('CREATE TABLE'):
+                table_column_list = get_table_column_list(f_open, alter_sql_open, logger)
+            elif line.startswith('INSERT INTO'):
                 line = line.strip('\n')
                 specific_columns = '(' + ','.join(table_column_list) + ')'
                 logger.info('specific_columns=%s' % specific_columns)
@@ -49,7 +49,6 @@ def alter_insert(table_column_list, sql_path, logger):
     return specific_insert_file
 
 def specific_column_insert(sql_path, logger):
-    table_column_list = get_table_column_list(sql_path, logger)
     specific_insert_file = alter_insert(table_column_list, sql_path, logger)
     return specific_insert_file
 
