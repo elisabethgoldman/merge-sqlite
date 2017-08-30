@@ -53,9 +53,9 @@ def specific_column_insert(sql_path, logger):
     specific_insert_file = alter_insert(sql_path, logger)
     return specific_insert_file
 
-def setup_logging(args, run_uuid):
+def setup_logging(args, job_uuid):
     basicConfig(
-        filename=os.path.join(run_uuid + '.log'),
+        filename=os.path.join(job_uuid + '.log'),
         level=args.level,
         filemode='w',
         format='%(asctime)s %(levelname)s %(message)s',
@@ -80,19 +80,19 @@ def main():
                         action='append',
                         required=False
     )
-    parser.add_argument('-u', '--run_uuid',
+    parser.add_argument('-u', '--job_uuid',
                         required=True
     )
     args = parser.parse_args()
 
     source_sqlite_list = args.source_sqlite
-    run_uuid = args.run_uuid
+    job_uuid = args.job_uuid
 
-    logger = setup_logging(args, run_uuid)
+    logger = setup_logging(args, job_uuid)
 
     if source_sqlite_list is None:
         logger.info('empty set, create 0 byte file')
-        db_name = run_uuid + '.db'
+        db_name = job_uuid + '.db'
         cmd = ['touch', db_name]
         output = check_output(cmd, shell=False)
     else:
@@ -113,7 +113,7 @@ def main():
             specific_insert_file = specific_column_insert(source_dump_path, logger)
 
             #load
-            destination_sqlite_path = run_uuid + '.db'
+            destination_sqlite_path = job_uuid + '.db'
             cmd = ['sqlite3', destination_sqlite_path, '<', specific_insert_file]
             shell_cmd = ' '.join(cmd)
             output = check_output(shell_cmd, shell=True)
