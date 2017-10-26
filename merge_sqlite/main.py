@@ -6,11 +6,23 @@ import os
 from subprocess import check_output
 
 def allow_create_fail(sql_path, logger):
-    shell_cmd = "sed -i 's/CREATE TABLE/CREATE TABLE if not exists/g' " + sql_path
-    check_output(shell_cmd, shell=True)
-    shell_cmd = "sed -i 's/CREATE INDEX/CREATE INDEX if not exists/g' " + sql_path
-    check_output(shell_cmd, shell=True)
-    return
+    create_notfail_file = 'create_not_fail.sql'
+    create_notfail_open = open(create_fail_file, 'w')
+    with open(sql_path, 'r') as sql_open:
+        for line in sql_open:
+            if line.startswith('CREATE'):
+                if 'NOT EXISTS' in line:
+                    create_notfail_open.write(line)
+                else:
+                    if 'TABLE' in line:
+                        newline = line.replace('TABLE', 'TABLE IF NOT EXISTS')
+                    elif 'INDEX' in line:
+                        newline = line.replace('INDEX', 'INDEX IF NOT EXISTS')
+                    create_notfail_open.write(newline)
+            else:
+                create_notfail_open.write(line)
+    create_notfail_open.close()
+    return create_notfail_file
 
 def get_table_column_list(f_open, alter_sql_open, logger):
     table_column_list = list()
@@ -107,10 +119,10 @@ def main():
             output = check_output(shell_cmd, shell=True)
 
             #alter text create table/index
-            allow_create_fail(source_dump_path, logger)
+            create_notfail_file = allow_create_fail(source_dump_path, logger)
 
             #specific column insert
-            specific_insert_file = specific_column_insert(source_dump_path, logger)
+            specific_insert_file = specific_column_insert(create_notfail_file, logger)
 
             #load
             destination_sqlite_path = task_uuid + '.db'
