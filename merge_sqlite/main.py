@@ -6,8 +6,8 @@ import os
 from subprocess import check_output
 
 def allow_create_fail(sql_path, logger):
-    create_notfail_file = 'create_not_fail.sql'
-    create_notfail_open = open(create_fail_file, 'w')
+    create_notfail_file = 'create_notfail.sql'
+    create_notfail_open = open(create_notfail_file, 'w')
     with open(sql_path, 'r') as sql_open:
         for line in sql_open:
             if line.startswith('CREATE'):
