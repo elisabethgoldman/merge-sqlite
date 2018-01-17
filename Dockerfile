@@ -2,7 +2,7 @@ FROM ubuntu:artful-20171019
 
 MAINTAINER Jeremiah H. Savage <jeremiahsavage@gmail.com>
 
-ENV VERSION 0.36
+ENV VERSION 0.37
 
 RUN apt-get update \
     && apt-get install -y \
