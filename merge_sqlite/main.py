@@ -127,7 +127,7 @@ def main() -> int:
             output = check_output(shell_cmd, shell=True)
 
             # alter text create table/index
-            create_notfail_file = allow_create_fail(source_dump_path, logger)
+            create_notfail_file = allow_create_fail(source_dump_path)
 
             # specific column insert
             specific_insert_file = specific_column_insert(create_notfail_file, logger)
