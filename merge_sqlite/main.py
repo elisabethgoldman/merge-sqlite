@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 
 import os
+import shlex
 import sys
 from argparse import ArgumentParser, Namespace
 from logging import DEBUG, INFO, Logger, basicConfig, getLogger
+from pathlib import Path
 from subprocess import check_output
 from typing import IO, List
 
@@ -110,21 +112,20 @@ def main() -> int:
 
     if source_sqlite_list is None:
         logger.info('empty set, create 0 byte file')
-        db_name = job_uuid + '.db'
-        cmd = ['touch', db_name]
-        check_output(cmd, shell=False)
+        db = Path(f"{job_uuid}.db")
+        db.touch()
     else:
         for source_sqlite_path in source_sqlite_list:
-            logger.info('source_sqlite_path=%s' % source_sqlite_path)
+            logger.info(f"{source_sqlite_path=}")
             source_sqlite_name = os.path.splitext(os.path.basename(source_sqlite_path))[
                 0
             ]
 
             # dump
-            source_dump_path = source_sqlite_name + '.sql'
-            cmd = ['sqlite3', source_sqlite_path, "\'.dump\'", '>', source_dump_path]
-            shell_cmd = ' '.join(cmd)
-            output = check_output(shell_cmd, shell=True)
+            source_dump_path = f"{source_sqlite_name}.sql"
+            cmd = f"sqlite3 {source_sqlite_path} '.dump' > {source_dump_path}"
+            shell_cmd = shlex.split(cmd)
+            output = check_output(shell_cmd)
 
             # alter text create table/index
             create_notfail_file = allow_create_fail(source_dump_path)
@@ -133,10 +134,10 @@ def main() -> int:
             specific_insert_file = specific_column_insert(create_notfail_file, logger)
 
             # load
-            destination_sqlite_path = job_uuid + '.db'
-            cmd = ['sqlite3', destination_sqlite_path, '<', specific_insert_file]
-            shell_cmd = ' '.join(cmd)
-            check_output(shell_cmd, shell=True)
+            destination_sqlite_path = f"{job_uuid}.db"
+            cmd = f"sqlite3 {destination_sqlite_path} < {specific_insert_file}"
+            shell_cmd = shlex.split(cmd)
+            check_output(shell_cmd)
     return 0
 
 
