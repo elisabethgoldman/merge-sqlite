@@ -1,4 +1,4 @@
-FROM quay.io/ncigdc/python38-builder as builder
+FROM python:3 as builder
 
 COPY ./ /opt
 
@@ -12,7 +12,7 @@ RUN apt-get update \
 
 RUN pip install tox && tox -p
 
-FROM quay.io/ncigdc/python38
+FROM python:3
 
 COPY --from=builder /opt/dist/*.tar.gz /opt
 COPY requirements.txt /opt
